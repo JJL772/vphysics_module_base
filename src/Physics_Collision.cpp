@@ -3,9 +3,6 @@
 #include <vphysics/virtualmesh.h>
 #include <cmodel.h>
 
-#include "BulletCollision/CollisionDispatch/btInternalEdgeUtility.h"
-#include "LinearMath/btConvexHull.h"
-
 #include "Physics_Collision.h"
 #include "Physics_Object.h"
 #include "convert.h"
@@ -17,84 +14,7 @@
 
 #define COLLISION_MARGIN 0.015 // 15 mm
 
-// Use btConvexTriangleMeshShape instead of btConvexHullShape?
-#define USE_CONVEX_TRIANGLES
-
-// lol hack
 extern IVPhysicsDebugOverlay *g_pDebugOverlay;
-
-/****************************
-* CLASS CCollisionQuery
-****************************/
-
-// FIXME: We don't use triangles to represent shapes internally!
-// Low priority, not even used ingame
-class CCollisionQuery : public ICollisionQuery {
-	public:
-		CCollisionQuery(CPhysCollide *pCollide) {m_pCollide = pCollide;}
-
-		// number of convex pieces in the whole solid
-		int					ConvexCount();
-		// triangle count for this convex piece
-		int					TriangleCount(int convexIndex);
-		// get the stored game data
-		uint				GetGameData(int convexIndex);
-		// Gets the triangle's verts to an array
-		void				GetTriangleVerts(int convexIndex, int triangleIndex, Vector *verts);
-		void				SetTriangleVerts(int convexIndex, int triangleIndex, const Vector *verts);
-		
-		// returns the 7-bit material index
-		int					GetTriangleMaterialIndex(int convexIndex, int triangleIndex);
-		// sets a 7-bit material index for this triangle
-		void				SetTriangleMaterialIndex(int convexIndex, int triangleIndex, int index7bits);
-
-	private:
-		CPhysCollide *	m_pCollide;
-};
-
-int CCollisionQuery::ConvexCount() {
-	if (m_pCollide->IsCompound()) {
-		btCompoundShape *pShape = m_pCollide->GetCompoundShape();
-		return pShape->getNumChildShapes();
-	}
-
-	return 0;
-}
-
-int CCollisionQuery::TriangleCount(int convexIndex) {
-#ifdef USE_CONVEX_TRIANGLES
-	Assert(convexIndex < m_pCollide->GetCompoundShape()->getNumChildShapes());
-	//btConvexTriangleMeshShape *pChild = (btConvexTriangleMeshShape *)m_pCollide->GetCompoundShape()->getChildShape(convexIndex);
-
-	//return pChild->getNumVertices
-	return 0;
-#else
-	NOT_IMPLEMENTED
-	return 0;
-#endif
-}
-
-unsigned int CCollisionQuery::GetGameData(int convexIndex) {
-	NOT_IMPLEMENTED
-	return 0;
-}
-
-void CCollisionQuery::GetTriangleVerts(int convexIndex, int triangleIndex, Vector *verts) {
-	NOT_IMPLEMENTED
-}
-
-void CCollisionQuery::SetTriangleVerts(int convexIndex, int triangleIndex, const Vector *verts) {
-	NOT_IMPLEMENTED
-}
-
-int CCollisionQuery::GetTriangleMaterialIndex(int convexIndex, int triangleIndex) {
-	NOT_IMPLEMENTED
-	return 0;
-}
-
-void CCollisionQuery::SetTriangleMaterialIndex(int convexIndex, int triangleIndex, int index7bits) {
-	NOT_IMPLEMENTED
-}
 
 /****************************
 * BYTESWAP DATA DESCRIPTIONS
